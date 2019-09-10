@@ -1,0 +1,107 @@
+clear all
+close all
+clc
+
+A = importdata('danepogodowe2.txt',',');                    %pobranie danych
+a=size(A);                                                  %badanie wielkości macierzy  ("a" jest tymczasowe)
+b=a(1,1);                                                   %sprawdzenie ilości wierszów
+clear a;                                
+
+
+temp=A(:,1);                                                %pobranie wartości temperatur
+pres=A(:,2);                                                %pobranie wartości ciśnień
+
+
+for v=1:b-1                                                 %pętla usuwająca błędne pomiary
+    temp(1,1)=NaN;                                          %m.in. pomiar 1szy-temp pokojowa
+    blad=2.4;                                               %aby uznać błąd różnica w kolejnym pomiarze 
+    if abs(temp(v,1)-temp(v+1,1))>=blad                     %musi wynosić 2,4 stopnia C
+      if abs(temp(v+1,1)-temp(v+2,1))>=blad                 %sprawdzanie różnicy
+          temp(v+1)=NaN;                                    %zastąpienie błędnej wart luką
+      end
+    end
+end
+
+grtemp=max(temp);                                           %szukanie największych/najmniejszych wartości
+lowertemp=min(temp);                                        %temperatury i ciśnienia
+
+grpres=max(pres);
+lowerpres=min(pres);
+
+d = '20:30 12-2-2018';                                          %ustawienie początkowej daty
+t=datetime(d,'InputFormat','HH:mm MM-dd-yyyy');                 %wczytanie jej                                           
+t2=t+hours(1:b);                                                %utworzenie zbioru- pomiaru co godz
+t21=t2(1,b);                                                    %końcwa data
+
+
+t3=t-hours(170);
+t4=t2+hours(100);
+
+startDate=datenum(d);                                           %data początkowa w zmienionym formacie
+endDate=datenum(t2(1,b));                                       %data końcowa
+xData=linspace(startDate,endDate,b);                            %przedział potrzebny do utworzenia wykresu
+
+%spr1=datetime(startDate,'ConvertFrom','datenum');
+%spr2=datetime(endDate,'ConvertFrom','datenum');
+
+
+%figure(1)                                                      %obrazek nr
+
+subplot(3,1,1);
+yyaxis left;                                                    %lewa część wykresu
+
+linfill = fillmissing(temp,'linear');                           %uzupełnienie pustych obszarów wykresu
+plot(xData,linfill);                                            %utworzenie wykresu temperatury
+hold on;
+
+B=temp;                                                         %linia zera st C
+B(:,1)=0;                                                       %tworzenie tablicy o tej samej wielkości co dane
+plot(xData,B);                                                  %wpisanie w każdy wiersz wart = 0 
+hold on; 
+
+ylim([lowertemp-2,grtemp+2]);                                   %granice wykresu na podst wartości min i max
+ylabel ('temp [C]');                                            %podpisanie osi
+
+title('pogoda w Gdyni');                                        %tytuł
+xlabel ('data [d/mc]');                                         %podpisanie osi x
+xlim([startDate,endDate]);
+datetick('x','dd/mm','keepticks');                              %definicja znaczników osi x (,'keepticks')
+
+yyaxis right;                                                   %prawa część wykresu
+plot(xData,pres);                                               %podobnie j.w.
+ylabel ('ciśnienie [hPa]');
+ylim([lowerpres-10,grpres+10]);
+
+
+subplot(3,1,2);                                                 %wygładzenie wykresu temp
+ym24 = movmean(linfill,12);
+plot(xData, ym24);
+hold on
+
+
+%figure(2);
+
+subplot(3,1,3);
+plot(xData,temp);
+ylabel ('temp [C]');
+xlabel ('time [hr:min]');
+title('przesilenie zimowe 21-22.12.18');
+                                                                %przykładowy cyk dobowy(przesilenie zimowe)
+d0 = '15:21 12-21-2018';                                        %zachód słońca       
+d1 = '8:05 12-22-2018';                                         %wschód słońca
+d2 = '15:21 12-22-2018';                                        %zachód słońca
+
+set0=datenum(d0);
+rise1=datenum(d1);
+set2=datenum(d2);
+
+xline(set0);
+xline(rise1);
+xline(set2);
+
+xlim([set0-0.3 set2+0.3]);
+datetick('x','HH:MM','keepticks');
+
+text(set0,0.25,'zachód');
+text(rise1,0.25,'wschód');
+text(set2,0.25,'zachód');
