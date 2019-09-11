@@ -3,7 +3,7 @@ ________________________________________________________________________________
 mierzenie temperatury oraz ciśnienia\
 zapisywanie danych co godzinę na karcie sd
 ________________________________________________________________________________________
-do projektu zostało wykorzystane:
+do projektu zostało wykorzystane:\
 -BMP180 (cyfrowy czujnik ciśnienia i temperatury)\
 -arduino nano\
 -karta SD wraz z gniazdem\
