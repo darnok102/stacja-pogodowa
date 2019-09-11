@@ -8,7 +8,7 @@ do projektu zostało wykorzystane:
 -arduino nano\
 -karta SD wraz z gniazdem\
 -przetwornica DC/DC\
--zasilacz\
+-zasilacz
 ________________________________________________________________________________________
 Konrad Kowalski 2019r\
 projekt był realizowany na potrzeby przedmiotu 2go roku studiów
